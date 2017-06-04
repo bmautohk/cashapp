@@ -1,0 +1,43 @@
+<ion-view title="Display Records">
+    <ion-content padding="'false'" class="has-header">
+
+		
+		<!-- -->
+<!--Automatically loops back from the begining
+ 
+		
+        <div class="button-bar">
+            <a href="#/page6" class="button button-stable button-block  icon-left ion-android-funnel">Filter</a>
+            <a href="#/page7" class="button button-stable button-block  icon ion-android-restaurant">Sort</a>
+        </div>
+		 -->
+        <ion-list ng-repeat="item in menu_items">
+          
+			<ion-item class="item-thumbnail-left" >
+	 
+                <img  ng-src="{{'http://localhost/pm/'+item.image_url}}"  ng-click="showProductInfo(item.id,item.desc,item.pay_from,item.pay_to,item.hkd,item.image_url)" >
+				<!-- 
+				<p style="position:absolute;right:10px;">
+				<a  ng-click="addToCart(item.p_id,item.p_image_id,item.p_name,item.p_price)" class="button  button-balanced button-clear   icon ion-android-cart">  </a> 
+				</p>
+                	 -->
+				<h2  ng-click="showProductInfo(item.id,item.desc,item.pay_from,item.pay_to,item.hkd,item.image_url)" > Desc: {{item.id}} </h2>
+				<h2  ng-click="showProductInfo(item.id,item.desc,item.pay_from,item.pay_to,item.hkd,item.image_url)" > Desc: {{item.desc}} </h2>
+				<p   ng-click="showProductInfo(item.id,item.desc,item.pay_from,item.pay_to,item.hkd,item.image_url)">Price:   {{item.hkd}}</p>
+				<p   ng-click="showProductInfo(item.id,item.desc,item.pay_from,item.pay_to,item.hkd,item.image_url)">From: {{item.pay_from}}</p>
+				<p   ng-click="showProductInfo(item.id,item.desc,item.pay_from,item.pay_to,item.hkd,item.image_url)">to:   {{item.pay_to}}</p>
+			</ion-item>
+			
+            
+        </ion-list>
+		 
+		<ion-infinite-scroll 
+		ng-if="!noMoreItemsAvailable" 
+		on-infinite="loadMore()" 
+		distance="10%">
+			<ion-infinite-scroll-content
+			loadingSpinner="bubbles">
+		</ion-infinite-scroll>
+ 
+    </ion-content>
+</ion-view>

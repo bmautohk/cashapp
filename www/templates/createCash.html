@@ -1,0 +1,40 @@
+<ion-view title="Create Cash Record">
+    <ion-content padding="'true'" class="has-header">
+        <form class="list" >
+            <ion-list>
+                <label class="item item-input">
+                    <span class="input-label">PayFrom</span>
+                    <input ng-model="cash.payFrom" type="text"  readonly>
+                </label>
+                <label class="item item-input">
+                    <span class="input-label">PayTo</span>
+                    <input ng-model="cash.payTo" type="text" placeholder="">
+                </label>
+				  <label class="item item-input">
+                    <span class="input-label">Acc</span>
+                    <input ng-model="cash.acc" type="text" placeholder="">
+                </label>
+				  <label class="item item-input">
+                    <span class="input-label">Desc</span>
+                    <input ng-model="cash.desc" type="text" placeholder="">
+                </label>
+				 <label class="item item-input">
+                    <span class="input-label">HKD</span>
+                    <input ng-model="cash.hkd" type="text" placeholder="">
+                </label>
+				 <label class="item item-input">
+                    <span class="input-label">RMB</span>
+                    <input ng-model="cash.rmb" type="text" placeholder="">
+                </label>
+				<label class="item item-input">
+                    <span class="input-label">remark</span>
+                    <textarea ng-model="cash.remark" type="text" placeholder=""></textarea>
+                </label>
+            </ion-list>
+            <div class="spacer" style="height: 40px;"></div>
+            <button  class="button button-stable button-block " ng-click="login()" >Submit </button>
+			
+          
+        </form>
+    </ion-content>
+</ion-view>

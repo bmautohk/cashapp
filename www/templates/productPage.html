@@ -1,0 +1,23 @@
+<ion-view title="Record Detail">
+    <ion-content padding="'true'" class="has-header">
+        <img ng-src="{{'http://localhost/pm/'+image_url}}" width="100%" height="auto" style="width: 100%; height: auto;">
+        <div class="button-bar">
+            <button class="button button-positive button-clear button-block  icon ion-camera"  ng-click="photoupload()"></button>
+           
+            <button class="button button-balanced button-clear button-block  icon ion-trash-a" ng-click="cashDelete()"></button>
+        </div>
+        <div class="list card">
+            <div class="item item-divider">Description</div>
+            <div class="item item-body">
+                <div>
+				 
+					<p>ID : {{id}}<p>
+                    <p>Desc:{{desc}}</p>
+					<p>PayFrom:{{pay_from}}</p>
+					<p>PayTo:{{pay_to}}</p>
+					<p>HKD:{{hkd}}</p>
+                </div>
+            </div>
+        </div>
+    </ion-content>
+</ion-view>

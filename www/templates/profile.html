@@ -1,0 +1,21 @@
+<ion-view title="Profile">
+    <ion-content padding="'true'" class="has-header">
+	
+ 
+        
+		<ion-list>
+            
+			<ion-item class="item-divider"></ion-item>
+ 
+			<label class="item item-input">
+                <span class="input-label">Name</span>
+				<textarea placeholder="" readonly> {{" "+loggedin_name}}</textarea>
+            </label>
+	 
+		
+			<button ng-click="logout()" class="button button-balanced button-block  icon-left ion-log-out">Logout</button>
+			  
+	        </ion-list>
+        
+    </ion-content>
+</ion-view>

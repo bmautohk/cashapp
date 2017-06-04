@@ -1,0 +1,15 @@
+<ion-view title="PhotoUpload">
+   
+    <ion-content>
+	  {{"Cash record created successfully, Please upload payment receipt !! ("+cash_id+""+loggedin_name+")"}}
+      <img ng-src="{{pathForImage(image)}}" style="width: 100%; height: 100%;">
+	   
+    </ion-content>
+    <ion-footer-bar class="bar bar-positive">
+      <div class="button-bar">
+	
+        <button class="button icon-left ion-camera" ng-click="loadImage()">Take Photo</button>
+        <button class="button icon-left ion-upload" ng-click="uploadImage()" ng-disabled="image === null">Upload</button>
+      </div>
+    </ion-footer-bar>
+</ion-view>
