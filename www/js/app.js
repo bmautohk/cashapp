@@ -20,9 +20,8 @@ angular.module('app', ['ionic', 'ngCordova', 'app.controllers', 'app.routes', 'a
       StatusBar.styleDefault();
     }
   });
-  
-
-
-
-  
 })
+
+.config(['$httpProvider', function($httpProvider) {
+   $httpProvider.defaults.withCredentials = true;
+ }])
