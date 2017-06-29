@@ -15,7 +15,7 @@
           
 			<ion-item class="item-thumbnail-left" >
 	 
-                <img  ng-src="{{'http://localhost/pm/'+item.image_url}}"  ng-click="showProductInfo(item.id,item.desc,item.pay_from,item.pay_to,item.hkd,item.image_url)" >
+                <img  ng-src="{{item.image_url}}"  ng-click="showProductInfo(item.id,item.desc,item.pay_from,item.pay_to,item.hkd,item.image_url)" >
 				<!-- 
 				<p style="position:absolute;right:10px;">
 				<a  ng-click="addToCart(item.p_id,item.p_image_id,item.p_name,item.p_price)" class="button  button-balanced button-clear   icon ion-android-cart">  </a> 

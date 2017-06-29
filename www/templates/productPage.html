@@ -1,6 +1,8 @@
 <ion-view title="Record Detail">
     <ion-content padding="'true'" class="has-header">
-        <img ng-src="{{'http://localhost/pm/'+image_url}}" width="100%" height="auto" style="width: 100%; height: auto;">
+        <img ng-src="{{image_url}}" width="100%" height="auto" style="width: 30%; height: auto;">
+        <img ng-src="{{payment_image_url}}" width="100%" height="auto" style="width: 30%; height: auto;">
+        <img ng-src="{{invoice_image_url}}" width="100%" height="auto" style="width: 30%; height: auto;">
         <div class="button-bar">
             <button class="button button-positive button-clear button-block  icon ion-camera"  ng-click="photoupload()"></button>
            

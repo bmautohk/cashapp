@@ -9,7 +9,6 @@ angular.module('app.controllers', ['ngCordova'])
     });
   };
  
- 
      if (sessionStorage.getItem('loggedin_name')!=null){
 		 
 	//put cart after menu
@@ -218,9 +217,19 @@ angular.module('app.controllers', ['ngCordova'])
 		 $scope.pay_from= sessionStorage.getItem('pay_from');
 		 $scope.pay_to= sessionStorage.getItem('pay_to');
 		 $scope.hkd= sessionStorage.getItem('hkd');
+		 $scope.getAllImages();
 	});
 
-	
+	//Display all images in cash detail
+	$scope.getAllImages = function(){
+		var url ="http://localhost/pm/api/getCash/" + $scope.id;
+		$http.get(url).success(function (response){
+				$scope.payment_image_url= response.payment_image_url;
+				console.info('payment image url: '+$scope.payment_image_url);
+				$scope.invoice_image_url= response.invoice_image_url;
+		});
+	}
+
 		$scope.photoupload = function() {
 			sessionStorage.setItem('cash_id', sessionStorage.getItem('id'));
 			$state.go('photoupload', {}, {location: "replace", reload: true});
@@ -299,8 +308,7 @@ angular.module('app.controllers', ['ngCordova'])
 			function (response){ 
 				console.log('cash_id',response.data.id);
 				sessionStorage.setItem('cash_id', response.data.id);
-				$state.go('photoupload', {}, {location: "replace", reload: true});
-				
+				$state.go('photoupload', {}, {reload: true});
 			},
 			function(response) {
 			      
@@ -310,146 +318,193 @@ angular.module('app.controllers', ['ngCordova'])
 		
 })
 
+.controller('photouploadCtrl', function ($scope, $state, $cordovaCamera, $cordovaFile, $cordovaFileTransfer, $cordovaDevice, $ionicPopup, $cordovaActionSheet, $http) {
+	$scope.cashImage = null;
+	$scope.cashImagePath = null;
+	$scope.paymentImage = null;
 
-.controller('photouploadCtrl', function ($scope, $cordovaCamera, $cordovaFile, $cordovaFileTransfer, $cordovaDevice, $ionicPopup, $cordovaActionSheet,$http,$state) {
-  
-  
-  $scope.$on('$stateChangeSuccess', function() {
-		    $scope.cash_id= sessionStorage.getItem('cash_id');
-			$scope.loggedin_name=sessionStorage.getItem('loggedin_name');
-			$scope.image = null;
-	});
-	
-
- 
   $scope.showAlert = function(title, msg) {
     var alertPopup = $ionicPopup.alert({
       title: title,
       template: msg
     });
   };
-	// Present Actionsheet for switch beteen Camera / Library
-	 $scope.loadImage = function() {
-	  var options = {
-		title: 'Select Image Source',
-		buttonLabels: ['Load from Library', 'Use Camera'],
-		addCancelButtonWithLabel: 'Cancel',
-		androidEnableCancelButton : true,
-	  };
-	  $cordovaActionSheet.show(options).then(function(btnIndex) {
-		var type = null;
-		if (btnIndex === 1) {
-		  type = Camera.PictureSourceType.PHOTOLIBRARY;
-		} else if (btnIndex === 2) {
-		  type = Camera.PictureSourceType.CAMERA;
-		}
-		if (type !== null) {
-		  $scope.selectPicture(type);
-		}
-	  });
-	};
- // The rest of the app comes in here
  
-		 // Take image with the camera or from library and store it inside the app folder
-		// Image will not be saved to users Library.
-		$scope.selectPicture = function(sourceType) {
-		  var options = {
-			quality: 75,
-			targetWidth: 1300,
-			targetHeight: 1300,
-			destinationType: Camera.DestinationType.FILE_URI,
-			sourceType: sourceType,
-			 correctOrientation: true,
-			saveToPhotoAlbum: true
-		  };
-		 
-		  $cordovaCamera.getPicture(options).then(function(imagePath) {
-			// Grab the file name of the photo in the temporary directory
-			var currentName = imagePath.replace(/^.*[\\\/]/, '');
-		 
-			//Create a new name for the photo
-			var d = new Date(),
-			n = d.getTime(),
-			newFileName =  n + ".jpg";
-		 
-			// If you are trying to load image from the gallery on Android we need special treatment!
-			if ($cordovaDevice.getPlatform() == 'Android' && sourceType === Camera.PictureSourceType.PHOTOLIBRARY) {
-			  window.FilePath.resolveNativePath(imagePath, function(entry) {
-				window.resolveLocalFileSystemURL(entry, success, fail);
-				function fail(e) {
-				  console.error('Error: ', e);
+	$scope.chooseImageType = function(){
+		//Start - Choose Image Type
+		var imageTypeOptions = {
+      title: 'Select Image Type',
+      buttonLabels: ['Cash', 'Payment', 'Invoice'],
+      addCancelButtonWithLabel: 'Cancel',
+      androidEnableCancelButton : true,
+    };
+    $cordovaActionSheet.show(imageTypeOptions).then(function(btnIndex) {
+			if(btnIndex == 1){
+				$scope.loadImage('cash');
+			}else if(btnIndex == 2){
+				$scope.loadImage('payment');
+			}else if(btnIndex == 3){
+				$scope.loadImage('invoice');
+			}
+
+			
+		});
+		//End - Choose Image Type
+	}
+
+  // The rest of the app comes in here
+  // Present Actionsheet for switch beteen Camera / Library
+  $scope.loadImage = function(imageType) {
+
+    var options = {
+      title: 'Select Image Source',
+      buttonLabels: ['Load from Library', 'Use Camera'],
+      addCancelButtonWithLabel: 'Cancel',
+      androidEnableCancelButton : true,
+    };
+    $cordovaActionSheet.show(options).then(function(btnIndex) {
+      var type = null;
+      if (btnIndex === 1) {
+        type = Camera.PictureSourceType.PHOTOLIBRARY;
+      } else if (btnIndex === 2) {
+        type = Camera.PictureSourceType.CAMERA;
+      }
+      if (type !== null) {
+        $scope.selectPicture(type, imageType);
+      }
+    });
+  };
+
+  // Take image with the camera or from library and store it inside the app folder
+  // Image will not be saved to users Library.
+  $scope.selectPicture = function(sourceType, imageType) {
+    var options = {
+      quality: 75,
+      destinationType: Camera.DestinationType.FILE_URI,
+      sourceType: sourceType,
+      saveToPhotoAlbum: false
+    };
+  
+    $cordovaCamera.getPicture(options).then(function(imagePath) {
+      // Grab the file name of the photo in the temporary directory
+      var currentName = imagePath.replace(/^.*[\\\/]/, '');
+  
+      //Create a new name for the photo
+      var d = new Date(),
+      n = d.getTime(),
+      newFileName =  n + ".jpg";
+  
+      // If you are trying to load image from the gallery on Android we need special treatment!
+      if ($cordovaDevice.getPlatform() == 'Android' && sourceType === Camera.PictureSourceType.PHOTOLIBRARY) {
+        window.FilePath.resolveNativePath(imagePath, function(entry) {
+          window.resolveLocalFileSystemURL(entry, success, fail);
+          function fail(e) {
+            console.error('Error: ', e);
+          }
+  
+          function success(fileEntry) {
+            var namePath = fileEntry.nativeURL.substr(0, fileEntry.nativeURL.lastIndexOf('/') + 1);
+            // Only copy because of access rights
+            $cordovaFile.copyFile(namePath, fileEntry.name, cordova.file.dataDirectory, newFileName).then(function(success){
+              if(imageType=='cash'){
+								$scope.cashImage = newFileName;
+							}else if(imageType=='payment'){
+								$scope.paymentImage = newFileName;
+							}else if(imageType=='invoice'){
+								$scope.invoiceImage = newFileName;
+							}
+							
+							//$scope.image = newFileName;
+            }, function(error){
+              $scope.showAlert('Error', error.exception);
+            });
+          };
+        }
+      );
+      } else {
+        var namePath = imagePath.substr(0, imagePath.lastIndexOf('/') + 1);
+        // Move the file to permanent storage
+        $cordovaFile.moveFile(namePath, currentName, cordova.file.dataDirectory, newFileName).then(function(success){
+					if(imageType=='cash'){
+								$scope.cashImage = newFileName;
+							}else if(imageType=='payment'){
+								$scope.paymentImage = newFileName;
+							}else if(imageType=='invoice'){
+								$scope.invoiceImage = newFileName;
+							}
+        }, function(error){
+          $scope.showAlert('Error', error.exception);
+        });
+      }
+    },
+    function(err){
+      // Not always an error, maybe cancel was pressed...
+    })
+  };
+
+  // Returns the local path inside the app for an image
+  $scope.pathForImage = function(image) {
+    if (image === null) {
+      return '';
+    } else {
+      return cordova.file.dataDirectory + image;
+    }
+  };
+
+	$scope.uploadImage = function() {
+		// Destination URL
+		var url = "http://localhost/pm/api/v2/image";
+		var imageType = '';
+		var isAllSuccess = true;
+		var images = [$scope.cashImage, $scope.paymentImage, $scope.invoiceImage];
+		for (var i=0; i<3; i++){
+			var image = images[i]
+			if(image!=null){
+				//Assign Image Type
+				if(i==0){
+					imageType = 'cash';
+				}else if(i==1){
+					imageType = 'payment';
+				}else if(i==2){
+					imageType = 'invoice';
 				}
-		 
-				function success(fileEntry) {
-				  var namePath = fileEntry.nativeURL.substr(0, fileEntry.nativeURL.lastIndexOf('/') + 1);
-				  // Only copy because of access rights
-				  $cordovaFile.copyFile(namePath, fileEntry.name, cordova.file.dataDirectory, newFileName).then(function(success){
-					$scope.image = newFileName;
-				  }, function(error){
-					$scope.showAlert('Error', error.exception);
-				  });
+				// File for Upload
+				var targetPath = $scope.pathForImage(image);
+
+				// File name only
+				var filename = image;
+				var options = {
+					fileKey: "file",
+					fileName: filename,
+					chunkedMode: false,
+					mimeType: "multipart/form-data",
+					params : {'fileName': filename,'image_type': imageType,'cash_id':sessionStorage.getItem('cash_id')}
 				};
-			  }
-			);
-			} else {
-			  var namePath = imagePath.substr(0, imagePath.lastIndexOf('/') + 1);
-			  // Move the file to permanent storage
-			  $cordovaFile.moveFile(namePath, currentName, cordova.file.dataDirectory, newFileName).then(function(success){
-				$scope.image = newFileName;
-			  }, function(error){
-				$scope.showAlert('Error', error.exception);
-			  });
+
+				$cordovaFileTransfer.upload(url, targetPath, options).then(function(result) {
+					console.log('Uploaded an image successfully.');
+				}, function(err) {
+					console.log('Upload an image failed.');
+					isAllSuccess = false;
+				}
+				);
 			}
-		  },
-		  function(err){
-			// Not always an error, maybe cancel was pressed...
-		  })
-		};
-		
-		
-		// Returns the local path inside the app for an image
-		$scope.pathForImage = function(image) {
-		  if (image === null) {
-			return '';
-		  } else {
-			return cordova.file.dataDirectory + image;
-		  }
-		};
-		
-		
-		$scope.uploadImage = function() {
-			  
-			  var urlimg = "http://localhost/pm/api/image";
-			  
-			  
-			 
-	
-						// File for Upload
-						  var targetPath = $scope.pathForImage($scope.image);
-						 
-						  // File name only
-						  var filename = $scope.image;
-						 
-		 
-			 
-					   var options = {
-						fileKey: "image_file",
-						fileName: filename,
-						httpMethod: "POST",
-						chunkedMode: true,
-						mimeType: "image/jpeg",
-						params : {'fileName': filename, id: $scope.cash_id}
-					  };
-					 
-					  $cordovaFileTransfer.upload(urlimg, targetPath, options).then(function(result) {
-						$scope.showAlert('Success', 'Image upload finished.');
-						
-						$state.go('menu', {}, {location: "replace", reload: true});
-					  },function(result) {
-						$scope.showAlert('Error', 'Unable to upload photo');
-					  });
-					  
-					  $scope.ion-upload.disable;
-			}
-})
-   
+		}
+		if(isAllSuccess){
+			$scope.showAlert('Success', 'All images upload finished.');
+			$scope.clearImages();
+			$state.go('profile', {}, {reload: true});
+		}else{
+			$scope.showAlert('Fail', 'Images upload failed.');
+		}
+	}
+
+	//$state.reload() is having bug to init controller data. Manual do it.
+	$scope.clearImages = function(){
+			$scope.cashImage = null;
+			$scope.paymentImage = null;
+			$scope.invoiceImage = null;
+	}
+
+
+});
