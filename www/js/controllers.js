@@ -25,13 +25,9 @@ angular.module('app.controllers', ['ngCordova'])
  
 	// Loadmore() called inorder to load the list 
 	$scope.loadMore = function() {
- 
 			 str=sharedFilterService.getUrl();
-			 
 			 $http.get(str).success(function (response){
-				 
 				 $scope.menu_items = response;
-				  
 				$scope.hasmore=response.has_more;	//"has_more": 0	or number of items left
 				$scope.hasmore=0;	
 				 $scope.$broadcast('scroll.infiniteScrollComplete');
@@ -52,7 +48,6 @@ angular.module('app.controllers', ['ngCordova'])
 		  sessionStorage.setItem('hkd',hkd);
 		   sessionStorage.setItem('pay_from',payFrom);
 		    sessionStorage.setItem('pay_to',payTo);
-			
 				
 		$state.go('productPage', {}, {location: "replace", reload: true});
 	  	 //window.location.href = "#/page13";
@@ -492,8 +487,10 @@ angular.module('app.controllers', ['ngCordova'])
 		}
 		if(isAllSuccess){
 			$scope.showAlert('Success', 'All images upload finished.');
-			$scope.clearImages();
-			$state.go('profile', {}, {reload: true});
+			setTimeout(function(){
+				$scope.clearImages();
+				$state.go('menu', {}, {reload: true});
+			}, 1000);
 		}else{
 			$scope.showAlert('Fail', 'Images upload failed.');
 		}
