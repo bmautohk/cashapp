@@ -197,14 +197,19 @@ angular.module('app.controllers', ['ngCordova'])
    
  
  
-.controller('productPageCtrl', function($scope,$state,$http,$ionicPopup) {
+.controller('productPageCtrl', function($scope,$state,$http,$ionicPopup, Lightbox) {
 
-	   $scope.showAlert = function(title, msg) {
+	$scope.showAlert = function(title, msg) {
     var alertPopup = $ionicPopup.alert({
       title: title,
       template: msg
     });
   };
+
+ $scope.openLightboxModal = function (index) {
+    Lightbox.openModal($scope.images, index);
+  };
+
 	angular.element(document).ready(function () {
 		$scope.id= sessionStorage.getItem('id');
  		$scope.image_url= sessionStorage.getItem('image_url');
@@ -220,8 +225,19 @@ angular.module('app.controllers', ['ngCordova'])
 		var url ="http://localhost/pm/api/getCash/" + $scope.id;
 		$http.get(url).success(function (response){
 				$scope.payment_image_url= response.payment_image_url;
-				console.info('payment image url: '+$scope.payment_image_url);
+				//console.info('payment image url: '+$scope.payment_image_url);
 				$scope.invoice_image_url= response.invoice_image_url;
+					$scope.images = [
+						{
+							'url': $scope.image_url
+						},
+						{
+							'url': $scope.payment_image_url
+						},
+						{
+							'url': $scope.invoice_image_url
+						}
+					]
 		});
 	}
 
@@ -487,10 +503,10 @@ angular.module('app.controllers', ['ngCordova'])
 		}
 		if(isAllSuccess){
 			$scope.showAlert('Success', 'All images upload finished.');
-			setTimeout(function(){
+			setTimeout(function(){//buffer for upload to server
 				$scope.clearImages();
 				$state.go('menu', {}, {reload: true});
-			}, 1000);
+			}, 1500);
 		}else{
 			$scope.showAlert('Fail', 'Images upload failed.');
 		}

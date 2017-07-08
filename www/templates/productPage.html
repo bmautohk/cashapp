@@ -1,8 +1,15 @@
 <ion-view cache-view="false" title="Record Detail">
     <ion-content padding="'true'" class="has-header">
-        <img ng-src="{{image_url}}" ng-show="image_url != null" width="100%" height="auto" style="width: 30%; height: auto;">
+ <ul>
+  <li ng-repeat="image in images" style='display: inline'>
+    <a ng-click="openLightboxModal($index)">
+      <img ng-src="{{image.url}}" class="img-thumbnail" style="width: 30%; height: auto;"> 
+    </a>
+  </li>
+ </ul>
+        <!--<img ng-src="{{image_url}}" ng-show="image_url != null" width="100%" height="auto" style="width: 30%; height: auto;">
         <img ng-src="{{payment_image_url}}" ng-show="payment_image_url != null" width="100%" height="auto" style="width: 30%; height: auto;">
-        <img ng-src="{{invoice_image_url}}" ng-show="invoice_image_url != null" width="100%" height="auto" style="width: 30%; height: auto;">
+        <img ng-src="{{invoice_image_url}}" ng-show="invoice_image_url != null" width="100%" height="auto" style="width: 30%; height: auto;">-->
         <div class="button-bar">
             <button class="button button-positive button-clear button-block  icon ion-camera"  ng-click="photoupload()"></button>
            
